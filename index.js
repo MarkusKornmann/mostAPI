@@ -1,21 +1,27 @@
-const express = require('express');const app = express();const port = 3062;
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 4000;
 
 app.use(express.json());
 
-app.get('/api',(res)=>{res.send('GET Anfrage ans Ziel');});
+// Dummy-Daten
+let items = [{ id: 1, name: "Item 1" }];
 
-app.post('/api',(req,res)=>{console.log('POST-Daten:', req.body); const data = req.body;
-    res.send(`POST-Anfrage mit Daten: ${JSON.stringify(data)}`);});
+// GET - Alle Items abrufen
+app.get("/api/items", (req, res) => res.json(items));
 
-    app.put('/api/:id',(req,res)=>{ const id = req.params.id; console.log('PUT-ID:', id);
-        console.log('PUT-Daten:', req.body); const data = req.body;
-        res.send(`PUT-Anfrage zum Aktualisieren der ID ${id} mit Daten: ${JSON.stringify(data)}`);
-    });
-
-    app.delete('/api/:id',(req,res)=>{const id = req.params.id; console.log('DELETE-ID:', id);
-        res.send(`DELETE-Anfrage, Datensatz ID ${id} wurde gelöscht`);
-    });
-
-    app.listen(port,()=>{console.log(`Server lüppt auf: http://localhost:${port}`);
+// POST - Neues Item hinzufügen
+app.post("/api/items", (req, res) => {
+  const newItem = { id: items.length + 1, name: req.body.name };
+  items.push(newItem);
+  res.status(201).json(newItem);
 });
 
+// DELETE - Item löschen
+app.delete("/api/items/:id", (req, res) => {
+  items = items.filter((item) => item.id !== parseInt(req.params.id));
+  res.status(204).send();
+});
+
+// Server starten
+app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
